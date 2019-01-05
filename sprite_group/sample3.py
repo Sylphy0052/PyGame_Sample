@@ -6,7 +6,7 @@ SCR_RECT = Rect(0, 0, 640, 480)
 
 class MySprite(pygame.sprite.Sprite):
     def __init__(self, filename, x, y, vx, vy):
-        pygame.sprite.Sprite.__init__(self)
+        pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = pygame.image.load(filename).convert_alpha()
         width = self.image.get_width()
         height = self.image.get_height()
@@ -24,13 +24,13 @@ class MySprite(pygame.sprite.Sprite):
         # 画面からはみ出ないようにする
         self.rect = self.rect.clamp(SCR_RECT)
 
-    def draw(self, screen):
-        screen.blit(self.image, self.rect)
-
 def main():
     pygame.init()
     screen = pygame.display.set_mode(SCR_RECT.size)
-    pygame.display.set_caption("How to Use Sprite")
+    pygame.display.set_caption("How to Use Sprite Group")
+
+    group = pygame.sprite.RenderUpdates()
+    MySprite.containers = group
 
     # スプライトを作成
     python1 = MySprite("python.png", 0, 0, 2, 2)
@@ -39,22 +39,22 @@ def main():
 
     clock = pygame.time.Clock()
 
+    background = pygame.Surface(SCR_RECT.size)
+    background.fill((0, 0, 255))
+    screen.blit(background, (0, 0))
+    pygame.display.update()
+
     while True:
         clock.tick(60)  # 60fps
 
-        screen.fill((0,0,255))
+        group.clear(screen, background)
 
         # スプライトを更新
-        python1.update()
-        python2.update()
-        python3.update()
+        group.update()
 
-        # スプライトを描画
-        python1.draw(screen)
-        python2.draw(screen)
-        python3.draw(screen)
+        dirty_rects = group.draw(screen)
 
-        pygame.display.update()
+        pygame.display.update(dirty_rects)
 
         for event in pygame.event.get():
             if event.type == QUIT:

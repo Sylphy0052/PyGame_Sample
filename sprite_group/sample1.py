@@ -24,18 +24,20 @@ class MySprite(pygame.sprite.Sprite):
         # 画面からはみ出ないようにする
         self.rect = self.rect.clamp(SCR_RECT)
 
-    def draw(self, screen):
-        screen.blit(self.image, self.rect)
-
 def main():
     pygame.init()
     screen = pygame.display.set_mode(SCR_RECT.size)
-    pygame.display.set_caption("How to Use Sprite")
+    pygame.display.set_caption("How to Use Sprite Group")
 
     # スプライトを作成
     python1 = MySprite("python.png", 0, 0, 2, 2)
     python2 = MySprite("python.png", 10, 10, 5, 5)
     python3 = MySprite("python.png", 320, 240, -2, 3)
+
+    group = pygame.sprite.RenderUpdates()
+    group.add(python1)
+    group.add(python2)
+    group.add(python3)
 
     clock = pygame.time.Clock()
 
@@ -45,14 +47,10 @@ def main():
         screen.fill((0,0,255))
 
         # スプライトを更新
-        python1.update()
-        python2.update()
-        python3.update()
+        group.update()
 
         # スプライトを描画
-        python1.draw(screen)
-        python2.draw(screen)
-        python3.draw(screen)
+        group.draw(screen)
 
         pygame.display.update()
 
